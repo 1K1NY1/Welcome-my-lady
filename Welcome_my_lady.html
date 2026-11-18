@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#FAF3EB" />
+  <meta property="og:title" content="Welcome My Lady — Une rencontre en 7 temps" />
+  <meta property="og:description" content="Un petit jeu interactif en 7 étapes pour faire connaissance ✨" />
+  <title>Welcome My Lady — Une rencontre en 7 temps</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-cream: #FAF3EB;
+      --terracotta: #C86D51;
+      --cacao: #2C1A16;
+      --cacao-soft: #5C3D35;
+      --rose-gold: #D49A6A;
+      --rose-blush: #B76E79;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-cream);
+      color: var(--cacao);
+      margin: 0;
+      min-height: 100dvh;
+      overflow-x: hidden;
+      transition: background-color 1.2s cubic-bezier(0.22, 1, 0.36, 1), color 1s ease;
+      padding-top: max(1rem, env(safe-area-inset-top));
+      padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    }
+    .font-serif-editorial { font-family: 'Cormorant Garamond', Georgia, serif; }
+
+    :focus-visible { outline: 2px solid #C86D51; outline-offset: 3px; border-radius: 12px; }
+
+    body.theme-warm { background: radial-gradient(circle at 15% 15%, #FFF9F2 0%, #FAF3EB 45%, #F2DEC8 100%); }
+    body.theme-joy  { background: radial-gradient(circle at 50% 25%, #FFF6E5 0%, #FBE0C8 50%, #F3C4A8 100%); }
+    body.theme-rain { background: linear-gradient(180deg, #0B1120 0%, #162033 55%, #1E293B 100%); color: #E2E8F0; }
+
+    .subtle-pattern {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.045;
+      background-image: radial-gradient(#C86D51 1px, transparent 1px), radial-gradient(#B76E79 1px, #FAF3EB 1px);
+      background-size: 44px 44px; background-position: 0 0, 22px 22px;
+      transition: opacity 1s ease;
+    }
+    body.theme-rain .subtle-pattern { opacity: 0.02; }
+
+    .ambient-orb { position: fixed; border-radius: 9999px; filter: blur(75px); pointer-events: none; z-index: 0; opacity: 0.55; transition: background 1.2s ease; }
+    .orb-1 { width: 320px; height: 320px; top: -60px; left: -60px; background: radial-gradient(circle, rgba(200,109,81,.35), transparent 70%); animation: orbFloat1 12s ease-in-out infinite alternate; }
+    .orb-2 { width: 360px; height: 360px; bottom: -80px; right: -60px; background: radial-gradient(circle, rgba(183,110,121,.32), transparent 70%); animation: orbFloat2 14s ease-in-out infinite alternate; }
+    body.theme-joy .orb-1 { background: radial-gradient(circle, rgba(251,191,36,.45), transparent 70%); }
+    body.theme-joy .orb-2 { background: radial-gradient(circle, rgba(244,114,182,.4), transparent 70%); }
+    body.theme-rain .orb-1 { background: radial-gradient(circle, rgba(56,189,248,.14), transparent 70%); }
+    body.theme-rain .orb-2 { background: radial-gradient(circle, rgba(99,102,241,.14), transparent 70%); }
+    @keyframes orbFloat1 { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(45px,35px) scale(1.15); } }
+    @keyframes orbFloat2 { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(-40px,-30px) scale(1.12); } }
+
+    #ambient-canvas { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+
+    .glass-card {
+      background: rgba(255, 250, 245, 0.82);
+      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(212, 154, 106, 0.38);
+      box-shadow: 0 24px 55px -15px rgba(44,26,22,.14), 0 4px 18px -4px rgba(200,109,81,.1);
+      transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    body.theme-rain .glass-card { background: rgba(15,23,42,.76); border: 1px solid rgba(148,163,184,.18); box-shadow: 0 25px 60px -15px rgba(0,0,0,.65); }
+
+    @keyframes fadeUpSpring { 0% { opacity: 0; transform: translateY(26px) scale(.96); } 70% { opacity: 1; transform: translateY(-3px) scale(1.01); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes shimmerGold { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+    @keyframes floatGentle { 0%,100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-7px) rotate(2deg); } }
+    @keyframes pulseGlow { 0%,100% { box-shadow: 0 10px 25px -6px rgba(200,109,81,.45); } 50% { box-shadow: 0 14px 34px -4px rgba(200,109,81,.72); } }
+    @keyframes emojiFloatUp { 0% { opacity: 1; transform: translateY(0) scale(.7) rotate(0); } 50% { opacity: 1; transform: translateY(-85px) scale(1.25) rotate(12deg); } 100% { opacity: 0; transform: translateY(-175px) scale(.95) rotate(-10deg); } }
+    @keyframes bubbleFloatAcross {
+      0% { opacity: 0; transform: translateY(45px) translateX(0) scale(.82) rotate(-2deg); }
+      12% { opacity: 1; transform: translateY(0) translateX(6px) scale(1) rotate(0); }
+      45% { transform: translateY(-28px) translateX(-12px) scale(1.02) rotate(1.5deg); }
+      78% { opacity: 1; transform: translateY(-58px) translateX(10px) scale(.99) rotate(-1deg); }
+      100% { opacity: 0; transform: translateY(-95px) translateX(-5px) scale(.88) rotate(1deg); }
+    }
+    @keyframes bufferProgressFill { 0% { width: 0%; } 100% { width: 100%; } }
+    @keyframes caretBlink { 50% { opacity: 0; } }
+
+    .floating-emoji { position: fixed; pointer-events: none; z-index: 60; font-size: 1.75rem; animation: emojiFloatUp 1.5s cubic-bezier(.22,1,.36,1) forwards; }
+    .animate-fade-up { animation: fadeUpSpring .75s cubic-bezier(.22,1,.36,1) forwards; }
+    .animate-fade-up-delay-1 { opacity: 0; animation: fadeUpSpring .75s cubic-bezier(.22,1,.36,1) .2s forwards; }
+    .animate-fade-up-delay-2 { opacity: 0; animation: fadeUpSpring .75s cubic-bezier(.22,1,.36,1) .4s forwards; }
+
+    .title-shimmer {
+      background: linear-gradient(110deg, #2C1A16 18%, #B76E79 40%, #D49A6A 50%, #C86D51 60%, #2C1A16 82%);
+      background-size: 200% auto; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+      animation: shimmerGold 5s linear infinite;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #C86D51 0%, #B76E79 100%); color: #FFFDF9;
+      animation: pulseGlow 3s infinite;
+      transition: transform .28s cubic-bezier(.34,1.56,.64,1), filter .3s ease;
+    }
+    .btn-primary:hover { transform: translateY(-3px) scale(1.02); filter: brightness(1.06); }
+    .btn-primary:active { transform: translateY(0) scale(.96); }
+
+    .option-btn {
+      background: rgba(255,255,255,.72); border: 1.5px solid rgba(212,154,106,.35); color: var(--cacao);
+      opacity: 0; animation: fadeUpSpring .55s cubic-bezier(.22,1,.36,1) forwards;
+      transition: transform .28s cubic-bezier(.34,1.56,.64,1), background-color .25s ease, border-color .25s ease, box-shadow .25s ease, opacity .3s ease;
+    }
+    .option-btn:hover:not(:disabled) { background: rgba(255,255,255,.98); border-color: #C86D51; transform: translateX(6px) scale(1.01); box-shadow: 0 10px 24px -6px rgba(200,109,81,.22); }
+    .option-btn.selected { background: linear-gradient(135deg, rgba(200,109,81,.16), rgba(183,110,121,.18)); border-color: #C86D51; transform: scale(1.015); box-shadow: 0 10px 25px -6px rgba(200,109,81,.28); }
+    .option-btn.dimmed { opacity: .45 !important; transform: scale(.985); }
+
+    .drifting-bubble {
+      position: fixed; z-index: 40; pointer-events: auto; max-width: 280px; will-change: transform, opacity;
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      box-shadow: 0 16px 36px -8px rgba(35,18,14,.2), inset 0 1px 1px rgba(255,255,255,.65);
+      animation: bubbleFloatAcross 7.5s cubic-bezier(.25,.8,.25,1) forwards;
+    }
+    .buffer-progress-anim { animation: bufferProgressFill 2.5s cubic-bezier(.22,1,.36,1) forwards; }
+
+    .bubble-instagram { background: linear-gradient(135deg, rgba(255,250,252,.92), rgba(253,242,248,.88)); border: 1.5px solid rgba(225,48,108,.32); }
+    .bubble-whatsapp  { background: linear-gradient(135deg, rgba(242,253,246,.93), rgba(220,252,231,.86)); border: 1.5px solid rgba(37,211,102,.38); }
+    .bubble-tiktok    { background: linear-gradient(135deg, rgba(18,20,30,.92), rgba(30,33,48,.88)); border: 1.5px solid rgba(37,244,238,.4); color: #F8FAFC; }
+    .bubble-google    { background: linear-gradient(135deg, rgba(255,253,244,.94), rgba(254,243,199,.88)); border: 1.5px solid rgba(251,188,5,.48); }
+
+    .typing-caret::after { content: "▍"; margin-left: 2px; color: #C86D51; animation: caretBlink .8s steps(1) infinite; }
+
+    @keyframes earWiggleLeft { 0%,100% { transform: rotate(0); } 30% { transform: rotate(-7deg); } 60% { transform: rotate(3deg); } }
+    @keyframes earWiggleRight { 0%,100% { transform: rotate(0); } 35% { transform: rotate(7deg); } 65% { transform: rotate(-3deg); } }
+    @keyframes pawWave { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-22deg); } 50% { transform: rotate(8deg); } 75% { transform: rotate(-18deg); } }
+    @keyframes tailSway { 0%,100% { transform: rotate(-4deg); } 50% { transform: rotate(10deg); } }
+    @keyframes catBlink { 0%,92%,100% { transform: scaleY(1); } 95% { transform: scaleY(.1); } }
+    .cat-ear-left { transform-origin: 68px 68px; animation: earWiggleLeft 4.5s ease-in-out infinite; }
+    .cat-ear-right { transform-origin: 132px 68px; animation: earWiggleRight 4.5s ease-in-out infinite .4s; }
+    .cat-paw-wave { transform-origin: 136px 142px; animation: pawWave 2.4s ease-in-out infinite; }
+    .cat-tail { transform-origin: 65px 168px; animation: tailSway 3.6s ease-in-out infinite; }
+    .cat-eyes { transform-origin: 100px 96px; animation: catBlink 5s infinite; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+      .option-btn, .animate-fade-up-delay-1, .animate-fade-up-delay-2 { opacity: 1; }
+    }
+  </style>
+</head>
+<body class="theme-warm flex flex-col items-center justify-center px-4 sm:px-6">
+
+  <div class="subtle-pattern" aria-hidden="true"></div>
+  <div class="ambient-orb orb-1" aria-hidden="true"></div>
+  <div class="ambient-orb orb-2" aria-hidden="true"></div>
+  <canvas id="ambient-canvas" aria-hidden="true"></canvas>
+  <div id="floating-bubbles-layer" class="fixed inset-0 pointer-events-none z-40 overflow-hidden" aria-hidden="true"></div>
+
+  <button id="btn-open-creator" type="button" title="Espace Créateur" aria-label="Espace créateur" class="fixed top-4 right-4 z-50 w-9 h-9 rounded-full bg-white/60 hover:bg-white/95 backdrop-blur-md border border-[#D49A6A]/35 text-[#7A564B] hover:text-[#2C1A16] flex items-center justify-center shadow-xs transition-all cursor-pointer opacity-60 hover:opacity-100">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
+  </button>
+
+  <main class="relative z-10 w-full max-w-xl mx-auto my-auto py-4">
+
+    <!-- ÉCRAN 1 : INTRO -->
+    <section id="screen-intro" class="glass-card rounded-3xl p-8 sm:p-12 text-center relative overflow-hidden">
+      <div class="animate-fade-up inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/80 border border-[#D49A6A]/40 shadow-xs mb-5">
+        <span class="w-2 h-2 rounded-full bg-[#25D366] animate-ping"></span>
+        <span class="text-xs font-medium text-[#5C3D35]">En ligne • Prêt à faire connaissance</span>
+      </div>
+
+      <div class="animate-fade-up flex items-center justify-center gap-3 mb-4" aria-hidden="true">
+        <span class="h-[1px] w-10 bg-gradient-to-r from-transparent to-[#C86D51]/60"></span>
+        <svg class="w-5 h-5 text-[#C86D51] animate-spin" style="animation-duration: 14s;" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z" /></svg>
+        <span class="h-[1px] w-10 bg-gradient-to-l from-transparent to-[#C86D51]/60"></span>
+      </div>
+
+      <h1 class="animate-fade-up font-serif-editorial text-5xl sm:text-6xl font-semibold tracking-tight leading-tight mb-4 title-shimmer">Welcome My Lady</h1>
+
+      <p class="animate-fade-up-delay-1 text-[#5C3D35] text-base sm:text-lg leading-relaxed max-w-md mx-auto mb-2">
+        Un petit jeu interactif en 7 étapes pour découvrir ton univers…
+      </p>
+      <p class="animate-fade-up-delay-1 italic font-serif-editorial text-lg sm:text-xl text-[#9E523B] max-w-md mx-auto mb-3">Choisis une option ou écris-moi directement ta propre réponse.</p>
+      <p class="animate-fade-up-delay-1 text-xs text-[#8C685D] mb-6">⏱ Environ 2 minutes · tes réponses me sont envoyées</p>
+
+      <div class="animate-fade-up-delay-1 max-w-xs mx-auto mb-6">
+        <label for="visitor-name-input" class="sr-only">Ton prénom ou surnom</label>
+        <input id="visitor-name-input" type="text" maxlength="30" autocomplete="given-name" placeholder="Ton prénom ou surnom (optionnel) ✨" class="w-full text-center rounded-full px-4 py-2.5 text-sm bg-white/80 border border-[#D49A6A]/45 text-[#2C1A16] placeholder-[#8C685D]/70 focus:outline-none focus:border-[#C86D51] transition-colors" />
+      </div>
+
+      <div class="animate-fade-up-delay-2">
+        <button id="btn-start" type="button" class="btn-primary group rounded-full px-8 py-4 text-base font-medium tracking-wide inline-flex items-center gap-3 cursor-pointer">
+          <span>Commencer l'expérience</span>
+          <svg class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
+        </button>
+      </div>
+
+      <p class="animate-fade-up-delay-2 mt-6 text-xs uppercase tracking-[0.2em] text-[#8C685D]/75">Curated with intention ✨</p>
+    </section>
+
+    <!-- ÉCRAN 2 : QUIZ -->
+    <section id="screen-quiz" class="hidden glass-card rounded-3xl p-6 sm:p-10" aria-live="polite">
+      <div class="flex items-center justify-between mb-3 gap-3">
+        <span id="question-step-label" class="text-xs font-semibold uppercase tracking-[0.18em] text-[#C86D51]">Étape 1 sur 7</span>
+        <span id="question-theme-tag" class="italic font-serif-editorial text-base text-[#7A564B] text-right">Brise-glace</span>
+      </div>
+
+      <div class="w-full h-2 bg-[#E6D2BE]/60 rounded-full overflow-hidden mb-6 p-0.5" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="14" id="progress-track">
+        <div id="progress-bar" class="h-full bg-gradient-to-r from-[#C86D51] via-[#D49A6A] to-[#B76E79] rounded-full transition-all duration-700 ease-out" style="width: 14%;"></div>
+      </div>
+
+      <div id="question-container">
+        <h2 id="question-text" class="font-serif-editorial text-2xl sm:text-3xl font-semibold text-[#2C1A16] leading-snug mb-5"></h2>
+        <div id="options-list" class="space-y-2.5"></div>
+
+        <div id="custom-reply-wrapper" class="mt-4 pt-3.5 border-t border-[#D49A6A]/25">
+          <label for="custom-message-input" class="block text-[11px] uppercase tracking-[0.14em] font-semibold text-[#8C685D] mb-2">💬 Ou écris-moi ta propre réponse / un petit mot :</label>
+          <div class="flex items-center gap-2">
+            <input id="custom-message-input" type="text" maxlength="220" placeholder="Dis-moi tout, je lirai ça de mon côté…" class="flex-1 min-w-0 rounded-2xl px-4 py-3 text-sm bg-white/85 border border-[#D49A6A]/45 text-[#2C1A16] placeholder-[#8C685D]/70 focus:outline-none focus:border-[#C86D51] transition-colors" />
+            <button id="btn-send-custom" type="button" class="rounded-2xl px-4 py-3 bg-[#2C1A16] hover:bg-[#432822] text-white text-xs sm:text-sm font-medium shrink-0 transition-all active:scale-95 cursor-pointer inline-flex items-center gap-1.5 shadow-sm">
+              <span>Envoyer</span>
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" /></svg>
+            </button>
+          </div>
+          <p id="custom-sent-hint" class="hidden text-[11px] text-[#B76E79] mt-1.5 italic">Message bien reçu ✨ tu peux en envoyer un autre si tu veux.</p>
+        </div>
+
+        <div id="feedback-box" class="hidden mt-5 rounded-2xl p-5 bg-gradient-to-br from-[#FFF9F3] to-[#F7E5D4] border border-[#D49A6A]/55 shadow-md">
+          <div class="flex items-start gap-3.5">
+            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-[#C86D51] to-[#B76E79] text-white flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+            </div>
+            <div>
+              <p class="text-[11px] uppercase tracking-[0.16em] font-semibold text-[#B76E79] mb-1">Ma réaction</p>
+              <p id="feedback-text" class="text-sm sm:text-base text-[#2C1A16] leading-relaxed"></p>
+            </div>
+          </div>
+        </div>
+
+        <div id="next-btn-wrapper" class="hidden mt-5 flex items-center justify-between gap-3">
+          <span class="text-xs text-[#8C685D] italic hidden sm:inline">Tu peux aussi ajouter un mot ci-dessus avant de passer ✨</span>
+          <button id="btn-next" type="button" class="btn-primary group rounded-full px-7 py-3 text-sm sm:text-base font-medium inline-flex items-center gap-2 shrink-0 cursor-pointer ml-auto">
+            <span>Continuer</span>
+            <svg class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+          </button>
+        </div>
+      </div>
+
+      <div id="buffer-container" class="hidden py-10 px-4 text-center">
+        <div class="w-12 h-12 mx-auto mb-4 rounded-full bg-gradient-to-br from-[#C86D51]/15 to-[#B76E79]/20 border border-[#D49A6A]/45 flex items-center justify-center text-[#C86D51]" style="animation: floatGentle 2.2s ease-in-out infinite;">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z" /></svg>
+        </div>
+        <p id="buffer-step-hint" class="text-[11px] uppercase tracking-[0.2em] font-semibold text-[#C86D51] mb-2">Préparation de la suite…</p>
+        <p id="buffer-message" class="font-serif-editorial italic text-2xl sm:text-3xl text-[#2C1A16] leading-snug max-w-md mx-auto mb-6"></p>
+        <div class="w-48 h-1.5 mx-auto bg-[#E6D2BE]/60 rounded-full overflow-hidden">
+          <div id="buffer-progress-bar" class="h-full bg-gradient-to-r from-[#C86D51] via-[#D49A6A] to-[#B76E79] rounded-full"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ÉCRAN 3A : POSITIF -->
+    <section id="screen-positive" class="hidden glass-card rounded-3xl p-8 sm:p-11 text-center animate-fade-up">
+      <div class="w-16 h-16 mx-auto mb-5 rounded-full bg-gradient-to-br from-[#C86D51] to-[#B76E79] text-white flex items-center justify-center shadow-lg" style="animation: floatGentle 3s ease-in-out infinite;">
+        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+      </div>
+
+      <h2 class="font-serif-editorial text-3xl sm:text-5xl font-semibold text-[#2C1A16] mb-3">Le courant passe à merveille ✨</h2>
+      <p id="positive-message" class="text-[#5C3D35] text-base sm:text-lg leading-relaxed max-w-md mx-auto mb-7"></p>
+
+      <div class="rounded-2xl p-6 bg-white/80 border border-[#D49A6A]/50 shadow-sm max-w-sm mx-auto mb-6">
+        <div class="flex items-center justify-center gap-3 mb-4">
+          <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] text-white flex items-center justify-center shadow-sm">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          </div>
+          <div class="text-left">
+            <p class="text-xs uppercase tracking-wider text-[#8C685D]">Mon Instagram</p>
+            <p class="text-lg font-semibold text-[#2C1A16]">@j.w.v1</p>
+          </div>
+        </div>
+
+        <a href="https://www.instagram.com/j.w.v1/" target="_blank" rel="noopener noreferrer" class="btn-primary w-full rounded-full py-3.5 px-6 text-sm sm:text-base font-medium inline-flex items-center justify-center gap-2 mb-3">
+          <span>Ouvrir Instagram @j.w.v1</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>
+        </a>
+
+        <button id="btn-copy-insta" type="button" class="w-full rounded-full py-2.5 px-4 text-xs sm:text-sm font-medium text-[#5C3D35] bg-[#FAF3EB] hover:bg-[#F2E2D0] border border-[#D49A6A]/40 transition-colors cursor-pointer inline-flex items-center justify-center gap-2">
+          <svg class="w-4 h-4 text-[#C86D51]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+          <span id="copy-label">Copier le pseudo</span>
+        </button>
+      </div>
+
+      <div class="rounded-2xl p-4 bg-[#FFFDF9]/85 border border-[#FBBF24]/40 max-w-sm mx-auto mb-5">
+        <p class="text-xs text-[#5C3D35] mb-2">Si tu as kiffé l'expérience, laisse un petit avis Google ⭐⭐⭐⭐⭐ <span class="text-[#8C685D]">(emojis please 😂)</span></p>
+        <div class="flex items-center justify-center gap-2">
+          <button type="button" aria-label="Réaction 😍" onclick="recordEmojiReaction(event, '😍')" class="text-xl hover:scale-125 active:scale-95 transition-transform cursor-pointer p-1">😍</button>
+          <button type="button" aria-label="Réaction 🔥" onclick="recordEmojiReaction(event, '🔥')" class="text-xl hover:scale-125 active:scale-95 transition-transform cursor-pointer p-1">🔥</button>
+          <button type="button" aria-label="Réaction 👑" onclick="recordEmojiReaction(event, '👑')" class="text-xl hover:scale-125 active:scale-95 transition-transform cursor-pointer p-1">👑</button>
+          <button type="button" aria-label="Réaction 💖" onclick="recordEmojiReaction(event, '💖')" class="text-xl hover:scale-125 active:scale-95 transition-transform cursor-pointer p-1">💖</button>
+          <button type="button" aria-label="Réaction 🥂" onclick="recordEmojiReaction(event, '🥂')" class="text-xl hover:scale-125 active:scale-95 transition-transform cursor-pointer p-1">🥂</button>
+        </div>
+      </div>
+
+      <button type="button" onclick="resetGame()" class="text-xs text-[#8C685D] hover:text-[#2C1A16] underline underline-offset-4 transition-colors cursor-pointer">Revoir les questions depuis le début</button>
+    </section>
+
+    <!-- ÉCRAN 3B : NÉGATIF -->
+    <section id="screen-negative" class="hidden glass-card rounded-3xl p-8 sm:p-11 text-center animate-fade-up">
+      <div class="w-44 h-44 mx-auto mb-3 relative">
+        <svg viewBox="0 0 200 200" class="w-full h-full drop-shadow-xl" role="img" aria-label="Petit chat noir mignon qui dit au revoir">
+          <circle cx="100" cy="112" r="68" fill="rgba(148,163,184,0.08)" />
+          <path class="cat-tail" d="M68 164 C 35 162, 26 132, 42 118 C 50 111, 56 120, 48 127 C 40 135, 48 150, 72 152" fill="none" stroke="#090D16" stroke-width="11" stroke-linecap="round" />
+          <ellipse cx="100" cy="146" rx="34" ry="32" fill="#090D16" />
+          <path d="M90 132 Q100 144 110 132 Q105 152 100 154 Q95 152 90 132 Z" fill="#1E293B" opacity="0.65" />
+          <ellipse cx="83" cy="172" rx="11" ry="8" fill="#090D16" stroke="#1E293B" stroke-width="1.5" />
+          <g class="cat-paw-wave">
+            <rect x="128" y="114" width="16" height="32" rx="8" fill="#090D16" stroke="#1E293B" stroke-width="1.5" />
+            <circle cx="136" cy="121" r="3" fill="#F472B6" opacity="0.85" />
+            <circle cx="132" cy="117" r="1.4" fill="#F472B6" opacity="0.85" />
+            <circle cx="136" cy="115.5" r="1.4" fill="#F472B6" opacity="0.85" />
+            <circle cx="140" cy="117" r="1.4" fill="#F472B6" opacity="0.85" />
+          </g>
+          <g class="cat-ear-left"><polygon points="62,78 56,36 90,62" fill="#090D16" /><polygon points="65,73 61,44 84,63" fill="#334155" opacity="0.55" /></g>
+          <g class="cat-ear-right"><polygon points="138,78 144,36 110,62" fill="#090D16" /><polygon points="135,73 139,44 116,63" fill="#334155" opacity="0.55" /></g>
+          <ellipse cx="100" cy="92" rx="42" ry="36" fill="#090D16" />
+          <g class="cat-eyes">
+            <ellipse cx="83" cy="93" rx="9.5" ry="10.5" fill="#FBBF24" /><ellipse cx="84" cy="93" rx="5" ry="7.5" fill="#090D16" />
+            <circle cx="81" cy="89" r="2.8" fill="#FFFFFF" /><circle cx="86" cy="96" r="1.2" fill="#FFFFFF" opacity="0.8" />
+            <ellipse cx="117" cy="93" rx="9.5" ry="10.5" fill="#FBBF24" /><ellipse cx="116" cy="93" rx="5" ry="7.5" fill="#090D16" />
+            <circle cx="113" cy="89" r="2.8" fill="#FFFFFF" /><circle cx="118" cy="96" r="1.2" fill="#FFFFFF" opacity="0.8" />
+          </g>
+          <polygon points="97,104 103,104 100,108" fill="#F472B6" />
+          <path d="M93 111 Q96.5 114 100 109 Q103.5 114 107 111" fill="none" stroke="#94A3B8" stroke-width="1.8" stroke-linecap="round" />
+          <line x1="64" y1="101" x2="46" y2="98" stroke="#475569" stroke-width="1.3" stroke-linecap="round" />
+          <line x1="64" y1="106" x2="47" y2="108" stroke="#475569" stroke-width="1.3" stroke-linecap="round" />
+          <line x1="136" y1="101" x2="154" y2="98" stroke="#475569" stroke-width="1.3" stroke-linecap="round" />
+          <line x1="136" y1="106" x2="153" y2="108" stroke="#475569" stroke-width="1.3" stroke-linecap="round" />
+        </svg>
+      </div>
+
+      <h2 class="font-serif-editorial text-3xl sm:text-4xl font-semibold text-slate-100 mb-3">Good Bye, My Lady… 🌧️</h2>
+      <p id="negative-message" class="text-slate-300 text-sm sm:text-base leading-relaxed max-w-md mx-auto mb-8">
+        Pas de souci, les plus belles rencontres sont aussi une question de timing et d'énergie. Merci d'avoir joué le jeu avec sincérité, je te souhaite le meilleur pour la suite.
+      </p>
+      <button type="button" onclick="resetGame()" class="rounded-full px-6 py-2.5 text-xs uppercase tracking-[0.18em] text-slate-300 hover:text-white border border-slate-600/70 hover:border-slate-400 bg-slate-800/50 transition-all cursor-pointer">Rejouer</button>
+    </section>
+
+    <div id="reaction-dock" class="mt-4 flex items-center justify-center gap-2 animate-fade-up-delay-2">
+      <div class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/75 backdrop-blur-md border border-[#D49A6A]/35 shadow-sm">
+        <span class="text-[11px] font-medium text-[#7A564B] mr-1">Ta vibe :</span>
+        <button type="button" aria-label="😌" onclick="recordEmojiReaction(event, '😌')" class="text-base hover:scale-125 active:scale-90 transition-transform cursor-pointer px-1">😌</button>
+        <button type="button" aria-label="✨" onclick="recordEmojiReaction(event, '✨')" class="text-base hover:scale-125 active:scale-90 transition-transform cursor-pointer px-1">✨</button>
+        <button type="button" aria-label="😂" onclick="recordEmojiReaction(event, '😂')" class="text-base hover:scale-125 active:scale-90 transition-transform cursor-pointer px-1">😂</button>
+        <button type="button" aria-label="😏" onclick="recordEmojiReaction(event, '😏')" class="text-base hover:scale-125 active:scale-90 transition-transform cursor-pointer px-1">😏</button>
+        <button type="button" aria-label="❤️" onclick="recordEmojiReaction(event, '❤️')" class="text-base hover:scale-125 active:scale-90 transition-transform cursor-pointer px-1">❤️</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- ESPACE CRÉATEUR -->
+  <div id="creator-modal" class="hidden fixed inset-0 z-50 bg-[#1A0F0D]/75 backdrop-blur-md flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Espace créateur">
+    <div class="bg-[#FFFBF7] border border-[#D49A6A]/50 rounded-3xl w-full max-w-2xl max-h-[88dvh] flex flex-col shadow-2xl overflow-hidden text-[#2C1A16]">
+      <div class="px-6 py-4 bg-gradient-to-r from-[#FAF3EB] to-[#F3E2D0] border-b border-[#D49A6A]/35 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-full bg-[#2C1A16] text-white flex items-center justify-center text-xs font-bold">JW</div>
+          <div>
+            <h3 class="font-serif-editorial text-xl font-semibold leading-none">Espace Créateur • @j.w.v1</h3>
+            <p class="text-[11px] text-[#7A564B] mt-0.5">Réponses & messages reçus en direct</p>
+          </div>
+        </div>
+        <button id="btn-close-creator" type="button" aria-label="Fermer" class="w-8 h-8 rounded-full bg-white/80 hover:bg-white text-[#5C3D35] flex items-center justify-center cursor-pointer">✕</button>
+      </div>
+
+      <div id="creator-lock-view" class="p-8 text-center my-auto">
+        <div class="w-12 h-12 mx-auto mb-4 rounded-2xl bg-[#FAF3EB] border border-[#D49A6A]/50 text-[#C86D51] flex items-center justify-center">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
+        </div>
+        <h4 class="font-serif-editorial text-2xl font-semibold mb-1">Accès privé</h4>
+        <p class="text-xs text-[#7A564B] mb-5">Entre ton code PIN pour lire ses réponses et ses messages</p>
+        <div class="max-w-[220px] mx-auto flex gap-2">
+          <input id="creator-pin-input" type="password" inputmode="numeric" maxlength="6" placeholder="Code PIN" aria-label="Code PIN" class="w-full text-center tracking-widest rounded-xl px-3 py-2.5 text-sm bg-white border border-[#D49A6A]/50 focus:outline-none focus:border-[#C86D51]" />
+          <button id="btn-unlock-creator" type="button" class="btn-primary rounded-xl px-4 py-2.5 text-sm font-medium cursor-pointer">OK</button>
+        </div>
+        <p id="creator-pin-error" class="hidden text-xs text-rose-600 mt-2.5">Code incorrect, réessaie.</p>
+      </div>
+
+      <div id="creator-dashboard-view" class="hidden flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
+        <div class="flex items-center justify-between gap-2 flex-wrap">
+          <span id="sessions-count-badge" class="text-xs font-semibold uppercase tracking-wider text-[#C86D51]">Chargement…</span>
+          <div class="flex items-center gap-3">
+            <button id="btn-copy-all" type="button" class="text-[11px] px-3 py-1 rounded-full border border-[#D49A6A]/50 bg-white hover:bg-[#FAF3EB] text-[#5C3D35] cursor-pointer">📋 Copier tout</button>
+            <span class="text-[11px] text-[#8C685D] inline-flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> <span id="sync-mode">En direct</span></span>
+          </div>
+        </div>
+        <div id="sessions-list" class="space-y-4"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SYNCHRO CLOUD FIREBASE (inchangée, mode hors-ligne géré) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, collection, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    let db = null, auth = null, currentUser = null;
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'welcome-my-lady-jwv1';
+
+    async function initCloudSync() {
+      try {
+        if (typeof __firebase_config === 'undefined') return;
+        const app = initializeApp(JSON.parse(__firebase_config));
+        db = getFirestore(app);
+        auth = getAuth(app);
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          await signInWithCustomToken(auth, __initial_auth_token);
+        } else {
+          await signInAnonymously(auth);
+        }
+        onAuthStateChanged(auth, (user) => {
+          currentUser = user;
+          window.__cloudReady = !!user;
+          if (user && window.pendingSessionSave) window.saveSessionToCloud(window.pendingSessionSave);
+        });
+      } catch (err) {
+        console.warn("Mode hors-ligne actif :", err);
+      }
+    }
+
+    window.saveSessionToCloud = async function (payload) {
+      window.pendingSessionSave = payload;
+      if (!db || !currentUser) return;
+      try {
+        const ref = doc(db, 'artifacts', appId, 'public', 'data', 'lady_responses', payload.sessionId);
+        await setDoc(ref, { ...payload, updatedAt: Date.now() }, { merge: true });
+      } catch (err) { console.error("Erreur sauvegarde cloud :", err); }
+    };
+
+    window.subscribeToResponses = function (renderCallback) {
+      if (!db || !currentUser) { renderCallback([]); return; }
+      const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'lady_responses');
+      onSnapshot(colRef, (snapshot) => {
+        const items = [];
+        snapshot.forEach((d) => items.push({ id: d.id, ...d.data() }));
+        items.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+        renderCallback(items);
+      }, (error) => console.error("Erreur lecture cloud :", error));
+    };
+
+    initCloudSync();
+  </script>
+
+  <!-- LOGIQUE PRINCIPALE -->
+  <script>
+    /* ====================== DONNÉES ====================== */
+    // {n} est remplacé par ", Prénom" si un prénom a été saisi, sinon par rien.
+    const quizData = [
+      {
+        theme: "Brise-glace • L'énergie",
+        question: "Pour commencer en douceur… Si on devait se retrouver là, tout de suite, ce serait plutôt :",
+        options: [
+          { label: "Un café/chocolat chaud dans un endroit cosy à refaire le monde ☕", reply: "Excellent choix{n}. J'aime les gens qui apprécient les vraies conversations sans bruit autour. On commence déjà sur de bonnes bases." },
+          { label: "Une balade nocturne en ville avec une bonne playlist dans les oreilles 🌙", reply: "L'ambiance nocturne, la musique, le calme… On dirait que tu sais apprécier les choses simples mais intenses. Validé." },
+          { label: "Un resto improvisé où on teste un plat qu'on ne connaît pas 🍜", reply: "Un esprit curieux qui n'a pas peur de l'inconnu. C'est exactement le genre d'énergie que j'aime." }
+        ]
+      },
+      {
+        theme: "Curiosité #1 • Débat vital",
+        question: "Question très sérieuse qui peut tout changer entre nous : ton avis le plus impopulaire (nourriture, film ou habitude) ?",
+        options: [
+          { label: "L'ananas sur la pizza est totalement valide, n'en déplaise aux puristes 🍍", reply: "J'admire le courage de l'assumer publiquement. Il faudra qu'on en débatte autour d'une vraie table." },
+          { label: "Je préfère largement une soirée chill sous un plaid qu'une boîte bondée 🛋️", reply: "Zéro débat là-dessus, c'est la définition même du bon goût et de la paix intérieure." },
+          { label: "Je mets 3 heures à choisir un film sur Netflix pour finir par m'endormir 🎬", reply: "Un grand classique ! Heureusement, je sais très bien prendre les commandes pour choisir le film." }
+        ]
+      },
+      {
+        theme: "Curiosité #2 • La vibe musicale",
+        question: "La bande-son parfaite d'une soirée réussie pour toi, ça ressemble à quoi ?",
+        options: [
+          { label: "R&B doux, Soul ou Afro-love qui pose une ambiance 🎶", reply: "Ah, une personne de goût. Le genre de son qui met tout de suite à l'aise et fait monter la température d'un cran." },
+          { label: "Rap, Hip-Hop ou Amapiano pour l'énergie et le rythme 🔥", reply: "Du rythme, du caractère… Je vois que tu ne fais pas les choses à moitié." },
+          { label: "Un mélange imprévisible, tant que ça fait ressentir quelque chose ✨", reply: "L'émotion avant l'étiquette. C'est rare et plutôt fascinant comme approche." }
+        ]
+      },
+      {
+        theme: "Curiosité #3 • Petit secret",
+        question: "Avoue un truc : quel est ton talent caché ou ton petit plaisir coupable ?",
+        options: [
+          { label: "Je chante sous la douche comme si j'étais au Stade de France 🎤", reply: "On tient une future tête d'affiche ! Promis, je ne demanderai pas de concert privé dès le premier rendez-vous (quoique…)." },
+          { label: "Je peux deviner la fin d'un film au bout de 10 minutes 🕵🏾‍♀️", reply: "Un esprit vif et observateur… Je vais devoir redoubler d'ingéniosité pour te surprendre." },
+          { label: "Les snacks sucrés à 2h du matin sont ma vraie faiblesse 🍫", reply: "Un classique indétrônable. Tu viens de marquer des points bonus sur l'échelle de l'authenticité." }
+        ]
+      },
+      {
+        theme: "Ce qui attire ton regard",
+        question: "Soyons honnêtes deux secondes : qu'est-ce qui attire vraiment ton attention en premier chez un homme ?",
+        options: [
+          { label: "Son esprit, sa façon de réfléchir et sa culture 🧠", reply: "L'intellect avant tout… Disons que tu risques de trouver la discussion intéressante par ici." },
+          { label: "Son charisme tranquille, son assurance et son élégance 👔", reply: "Le calme et la maîtrise parlent toujours plus fort que le bruit. On se comprend." },
+          { label: "Son humour et sa capacité à te faire lâcher prise 😂", reply: "Savoir faire rire avec subtilité, c'est un art. Promis, tu ne devrais pas t'ennuyer." }
+        ]
+      },
+      {
+        theme: "Vision & Ambitions",
+        question: "Parlons un peu d'avenir. Aujourd'hui, quelle est ton ambition principale ou ce qui te fait vibrer ?",
+        options: [
+          { label: "Construire mes projets, réussir et être indépendante 👑", reply: "Une femme qui sait où elle va et qui bâtit son propre empire… Il n'y a rien de plus attirant. On a clairement la même mentalité." },
+          { label: "Voyager, découvrir le monde et collectionner des souvenirs ✈️", reply: "L'appel du large et la soif de découverte. J'ai justement quelques destinations en tête qui pourraient te plaire…" },
+          { label: "Trouver un bel équilibre entre mes objectifs et une vraie complicité à deux 🥂", reply: "Avancer loin, mais bien accompagnée. C'est exactement la définition d'une équipe solide." },
+          { label: "Profiter du présent sans trop me prendre la tête pour l'instant 🌿", reply: "Savoir savourer l'instant présent est une qualité sous-cotée. Parfois, les meilleures histoires commencent sans plan précis." }
+        ]
+      },
+      {
+        theme: "Le verdict final",
+        question: "On a fait un premier tour d'horizon… Tu as envie qu'on continue cette discussion en vrai (ou en DM) ?",
+        isFinal: true,
+        options: [
+          { label: "Carrément, donne-moi ton Insta ! 🔥", outcome: "positive_enthusiastic", reply: "J'avais un bon pressentiment dès la première question{n}. Hâte qu'on continue ça ensemble — viens me faire un coucou sur Insta !" },
+          { label: "Pourquoi pas, je suis curieuse de voir la suite 👀", outcome: "positive_curious", reply: "La curiosité est un très joli défaut{n}… Et j'ai hâte de te montrer la suite. Rejoins-moi sur Insta !" },
+          { label: "Je préfère qu'on en reste là, merci pour le jeu ! 🌙", outcome: "negative", reply: "Merci pour ton honnêteté{n}." }
+        ]
+      }
+    ];
+
+    // Phrases affichées pendant l'écran de transition (clé = index de la question qui vient d'être validée)
+    const bufferTransitions = [
+      { hint: "Étape suivante…",       quote: "Les bonnes histoires commencent toujours par une petite curiosité…" },
+      { hint: "Je note ça quelque part…", quote: "Intéressant. Je commence à voir qui tu es." },
+      { hint: "On monte le son…",      quote: "Une bonne bande-son change tout, tu ne trouves pas ?" },
+      { hint: "Encore un peu de patience…", quote: "Les secrets bien gardés sont les plus savoureux." },
+      { hint: "On s'approche…",        quote: "Et si on parlait de ce qui compte vraiment ?" },
+      { hint: "Dernière ligne droite…", quote: "Plus qu'une question… la plus importante." }
+    ];
+
+    const floatingRemarkPool = [
+      { platform: "instagram", appName: "Instagram • DM", text: "Avoue, c'est quand même plus original qu'un simple « salut ça va ? » 😌✨" },
+      { platform: "whatsapp", appName: "WhatsApp • j.w.v1", text: "J'ai codé tout ce site moi-même juste pour apprendre à te connaître 👀💻" },
+      { platform: "google", appName: "Avis Google • 5.0 ⭐⭐⭐⭐⭐", text: "Si tu peux laisse un avis Google (emojis please 😂)" },
+      { platform: "tiktok", appName: "TikTok • Pour Toi", text: "POV : Tu viens de tomber sur le profil le plus créatif de ton FYP 🔥🎶" },
+      { platform: "instagram", appName: "Instagram • Note", text: "La NASA n'a rien à envier à ce niveau de charme et d'ingénierie 🚀😏" },
+      { platform: "whatsapp", appName: "WhatsApp • En ligne", text: "Fun fact : chaque réponse que tu écris arrive directement chez moi 📬✨" }
+    ];
+
+    /* ====================== ÉTAT ====================== */
+    let unusedBubbles = [...floatingRemarkPool];
+    let bubbleInterval = null, bufferTimeout = null, typeTimer = null;
+    let currentQuestionIndex = 0;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const LOCAL_KEY = "wml_sessions_v2";
+
+    function newSession() {
+      return {
+        sessionId: "lady_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7),
+        visitorName: "My Lady",
+        startedAt: new Date().toLocaleString("fr-FR"),
+        answers: {},
+        emojis: [],
+        verdict: "En cours…"
+      };
+    }
+    let sessionRecord = newSession();
+
+    const hasName = () => sessionRecord.visitorName && sessionRecord.visitorName !== "My Lady";
+    const withName = (s) => s.replace("{n}", hasName() ? ", " + sessionRecord.visitorName : "");
+    const escapeHtml = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+    /* Sauvegarde : cloud si dispo + copie locale (filet de sécurité) */
+    function saveLocal() {
+      try {
+        const all = JSON.parse(localStorage.getItem(LOCAL_KEY) || "{}");
+        all[sessionRecord.sessionId] = { ...sessionRecord, updatedAt: Date.now() };
+        localStorage.setItem(LOCAL_KEY, JSON.stringify(all));
+      } catch (e) { /* stockage indisponible : on ignore */ }
+    }
+    function loadLocal() {
+      try { return Object.values(JSON.parse(localStorage.getItem(LOCAL_KEY) || "{}")).sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0)); }
+      catch (e) { return []; }
+    }
+    function syncCurrentSession() {
+      saveLocal();
+      if (typeof window.saveSessionToCloud === "function") window.saveSessionToCloud(sessionRecord);
+    }
+
+    /* ====================== BULLES FLOTTANTES ====================== */
+    function getNextUniqueBubble() {
+      if (unusedBubbles.length === 0) unusedBubbles = [...floatingRemarkPool];
+      return unusedBubbles.splice(Math.floor(Math.random() * unusedBubbles.length), 1)[0];
+    }
+
+    function spawnUniqueDriftingBubble() {
+      const layer = document.getElementById("floating-bubbles-layer");
+      if (!layer || layer.children.length > 0 || ambientMode === "rain" || reducedMotion) return;
+
+      const data = getNextUniqueBubble();
+      const styles = {
+        instagram: ["bubble-instagram", `<div class="w-7 h-7 rounded-full bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] text-white flex items-center justify-center shrink-0 text-[10px] font-bold">IG</div>`],
+        whatsapp:  ["bubble-whatsapp",  `<div class="w-7 h-7 rounded-full bg-[#25D366] text-white flex items-center justify-center shrink-0 text-[10px] font-bold">WA</div>`],
+        tiktok:    ["bubble-tiktok",    `<div class="w-7 h-7 rounded-full bg-black border border-[#25F4EE] text-[#25F4EE] flex items-center justify-center shrink-0 text-xs font-bold">♪</div>`],
+        google:    ["bubble-google",    `<div class="w-7 h-7 rounded-full bg-white border border-amber-300 text-amber-500 flex items-center justify-center shrink-0 text-xs font-bold">G</div>`]
+      };
+      const [bubbleClass, badgeHtml] = styles[data.platform] || styles.instagram;
+      const isDark = data.platform === "tiktok";
+
+      const bubble = document.createElement("div");
+      bubble.className = `drifting-bubble ${bubbleClass} rounded-3xl px-4 py-3 flex items-center gap-2.5 cursor-pointer`;
+
+      const isMobile = window.innerWidth < 640;
+      bubble.style.top = `${isMobile ? 12 + Math.random() * 14 : 14 + Math.random() * 62}%`;
+      if (isMobile) bubble.style.left = `${6 + Math.random() * 12}%`;
+      else if (Math.random() > 0.5) bubble.style.left = `${2 + Math.random() * 8}%`;
+      else bubble.style.right = `${2 + Math.random() * 8}%`;
+
+      bubble.innerHTML = `
+        ${badgeHtml}
+        <div class="min-w-0 text-left">
+          <p class="text-[10px] font-semibold uppercase tracking-wider ${isDark ? "text-slate-300" : "text-[#8C685D]"}">${data.appName}</p>
+          <p class="text-xs font-medium leading-snug ${isDark ? "text-white" : "text-[#2C1A16]"}">${data.text}</p>
+        </div>`;
+
+      bubble.addEventListener("click", (e) => {
+        triggerEmojiBurst(e, "✨");
+        bubble.style.transition = "opacity .25s ease";
+        bubble.style.opacity = "0";
+        bubble.style.pointerEvents = "none";
+        setTimeout(() => bubble.remove(), 250);
+      });
+
+      layer.appendChild(bubble);
+      setTimeout(() => bubble.remove(), 7600);
+    }
+
+    function startFloatingBubblesLoop() {
+      if (bubbleInterval) clearInterval(bubbleInterval);
+      bubbleInterval = setInterval(spawnUniqueDriftingBubble, 10000);
+    }
+
+    function triggerEmojiBurst(event, emoji, count = 4) {
+      if (reducedMotion) return;
+      const x = (event && event.clientX) || window.innerWidth / 2;
+      const y = (event && event.clientY) || window.innerHeight / 2;
+      for (let i = 0; i < count; i++) {
+        const el = document.createElement("span");
+        el.className = "floating-emoji";
+        el.textContent = emoji;
+        el.style.left = `${x + (Math.random() - 0.5) * 60}px`;
+        el.style.top = `${y + (Math.random() - 0.5) * 20}px`;
+        el.style.animationDuration = `${1.2 + Math.random() * 0.5}s`;
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 1700);
+      }
+    }
+
+    function recordEmojiReaction(event, emoji) {
+      triggerEmojiBurst(event, emoji);
+      sessionRecord.emojis.push(emoji);
+      syncCurrentSession();
+    }
+
+    /* ====================== DOM ====================== */
+    const $ = (id) => document.getElementById(id);
+    const screenIntro = $("screen-intro"), screenQuiz = $("screen-quiz"), screenPositive = $("screen-positive"), screenNegative = $("screen-negative");
+    const reactionDock = $("reaction-dock");
+    const questionStepLabel = $("question-step-label"), questionThemeTag = $("question-theme-tag");
+    const progressBar = $("progress-bar"), progressTrack = $("progress-track");
+    const questionText = $("question-text"), optionsList = $("options-list");
+    const customMessageInput = $("custom-message-input"), btnSendCustom = $("btn-send-custom"), customSentHint = $("custom-sent-hint");
+    const feedbackBox = $("feedback-box"), feedbackText = $("feedback-text");
+    const nextBtnWrapper = $("next-btn-wrapper"), btnNext = $("btn-next");
+    const positiveMessage = $("positive-message");
+
+    /* Effet machine à écrire pour la "réaction" */
+    function typeText(el, text) {
+      clearInterval(typeTimer);
+      if (reducedMotion) { el.textContent = text; el.classList.remove("typing-caret"); return; }
+      el.textContent = "";
+      el.classList.add("typing-caret");
+      let i = 0;
+      typeTimer = setInterval(() => {
+        el.textContent = text.slice(0, ++i);
+        if (i >= text.length) { clearInterval(typeTimer); el.classList.remove("typing-caret"); }
+      }, 16);
+    }
+
+    $("btn-start").addEventListener("click", (e) => {
+      triggerEmojiBurst(e, "✨");
+      const rawName = $("visitor-name-input").value.trim();
+      if (rawName) sessionRecord.visitorName = rawName;
+      syncCurrentSession();
+      screenIntro.classList.add("hidden");
+      screenQuiz.classList.remove("hidden");
+      screenQuiz.classList.add("animate-fade-up");
+      currentQuestionIndex = 0;
+      renderQuestion();
+    });
+    $("visitor-name-input").addEventListener("keydown", (e) => { if (e.key === "Enter") $("btn-start").click(); });
+
+    function renderQuestion() {
+      const q = quizData[currentQuestionIndex];
+      const total = quizData.length;
+      const pct = Math.round(((currentQuestionIndex + 1) / total) * 100);
+
+      questionStepLabel.textContent = `Étape ${currentQuestionIndex + 1} sur ${total}`;
+      questionThemeTag.textContent = q.theme;
+      progressBar.style.width = `${pct}%`;
+      progressTrack.setAttribute("aria-valuenow", pct);
+
+      questionText.textContent = q.question;
+      optionsList.innerHTML = "";
+      customMessageInput.value = "";
+      customSentHint.classList.add("hidden");
+      feedbackBox.classList.add("hidden");
+      nextBtnWrapper.classList.add("hidden");
+      clearInterval(typeTimer);
+      $("buffer-container").classList.add("hidden");
+      $("question-container").classList.remove("hidden");
+
+      const letters = ["A", "B", "C", "D"];
+      q.options.forEach((opt, idx) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.style.animationDelay = `${idx * 0.1}s`;
+        btn.className = "option-btn w-full text-left rounded-2xl p-3.5 sm:p-4 flex items-center gap-3.5 cursor-pointer";
+        btn.innerHTML = `
+          <span class="w-8 h-8 rounded-full bg-[#FAF3EB] border border-[#D49A6A]/50 text-[#C86D51] font-semibold text-xs flex items-center justify-center shrink-0 transition-colors">${letters[idx]}</span>
+          <span class="text-sm sm:text-base font-medium leading-snug">${opt.label}</span>`;
+        btn.addEventListener("click", (e) => handleOptionSelect(e, btn, opt, q));
+        optionsList.appendChild(btn);
+      });
+      window.scrollTo({ top: 0, behavior: reducedMotion ? "auto" : "smooth" });
+    }
+
+    function handleOptionSelect(event, selectedBtn, optionObj, questionObj) {
+      triggerEmojiBurst(event, "💫");
+      optionsList.querySelectorAll(".option-btn").forEach((b) => {
+        b.disabled = true;
+        if (b === selectedBtn) {
+          b.classList.add("selected");
+          const badge = b.querySelector("span:first-child");
+          badge.classList.remove("bg-[#FAF3EB]", "text-[#C86D51]");
+          badge.classList.add("bg-[#C86D51]", "text-white");
+        } else b.classList.add("dimmed");
+      });
+
+      sessionRecord.answers[currentQuestionIndex] = {
+        question: questionObj.question,
+        choice: optionObj.label,
+        customText: sessionRecord.answers[currentQuestionIndex]?.customText || ""
+      };
+
+      if (questionObj.isFinal) {
+        sessionRecord.verdict = optionObj.outcome === "negative" ? "Pas intéressée 🌧️" : "Intéressée ✨ (" + optionObj.label + ")";
+        syncCurrentSession();
+        setTimeout(() => triggerEnding(optionObj), 550);
+        return;
+      }
+      syncCurrentSession();
+
+      feedbackBox.classList.remove("hidden", "animate-fade-up");
+      void feedbackBox.offsetWidth;
+      feedbackBox.classList.add("animate-fade-up");
+      typeText(feedbackText, withName(optionObj.reply));
+
+      nextBtnWrapper.classList.remove("hidden");
+      nextBtnWrapper.classList.add("animate-fade-up");
+      setTimeout(() => btnNext.focus({ preventScroll: true }), 120);
+    }
+
+    function handleCustomMessageSubmit(event) {
+      const text = customMessageInput.value.trim();
+      if (!text) return;
+      triggerEmojiBurst(event, "💌");
+      const q = quizData[currentQuestionIndex];
+      const existing = sessionRecord.answers[currentQuestionIndex];
+      if (!existing) {
+        sessionRecord.answers[currentQuestionIndex] = { question: q.question, choice: "(Réponse libre uniquement)", customText: text };
+      } else {
+        existing.customText = existing.customText ? existing.customText + " / " + text : text;
+      }
+      syncCurrentSession();
+      customMessageInput.value = "";
+      customSentHint.classList.remove("hidden");
+    }
+    btnSendCustom.addEventListener("click", handleCustomMessageSubmit);
+    customMessageInput.addEventListener("keydown", (e) => { if (e.key === "Enter") handleCustomMessageSubmit(e); });
+
+    /* Raccourcis clavier : A-D / 1-4 pour choisir, Entrée pour continuer */
+    document.addEventListener("keydown", (e) => {
+      if (screenQuiz.classList.contains("hidden") || e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.target.tagName === "INPUT" || !$("creator-modal").classList.contains("hidden")) return;
+      const map = { a: 0, b: 1, c: 2, d: 3, 1: 0, 2: 1, 3: 2, 4: 3 };
+      const idx = map[e.key.toLowerCase()];
+      if (idx !== undefined) {
+        const btn = optionsList.querySelectorAll(".option-btn")[idx];
+        if (btn && !btn.disabled) btn.click();
+      }
+    });
+
+    btnNext.addEventListener("click", () => {
+      if (currentQuestionIndex >= quizData.length - 1) return;
+      const questionContainer = $("question-container"), bufferContainer = $("buffer-container"), bufferBar = $("buffer-progress-bar");
+      const t = bufferTransitions[currentQuestionIndex % bufferTransitions.length];
+      $("buffer-step-hint").textContent = t.hint;
+      $("buffer-message").textContent = t.quote;
+
+      clearInterval(typeTimer);
+      questionContainer.classList.add("hidden");
+      bufferContainer.classList.remove("hidden", "animate-fade-up");
+      void bufferContainer.offsetWidth;
+      bufferContainer.classList.add("animate-fade-up");
+
+      bufferBar.classList.remove("buffer-progress-anim");
+      void bufferBar.offsetWidth;
+      bufferBar.classList.add("buffer-progress-anim");
+
+      spawnUniqueDriftingBubble();
+
+      clearTimeout(bufferTimeout);
+      bufferTimeout = setTimeout(() => {
+        currentQuestionIndex++;
+        bufferContainer.classList.add("hidden");
+        questionContainer.classList.remove("hidden", "animate-fade-up");
+        void questionContainer.offsetWidth;
+        questionContainer.classList.add("animate-fade-up");
+        renderQuestion();
+      }, 2500);
+    });
+
+    function triggerEnding(optionObj) {
+      screenQuiz.classList.add("hidden");
+      $("floating-bubbles-layer").innerHTML = "";
+      reactionDock.classList.add("hidden");
+      window.scrollTo({ top: 0 });
+
+      if (optionObj.outcome === "negative") {
+        document.body.classList.remove("theme-warm", "theme-joy");
+        document.body.classList.add("theme-rain");
+        document.querySelector('meta[name="theme-color"]').content = "#0B1120";
+        setAmbientMode("rain");
+        screenNegative.classList.remove("hidden");
+      } else {
+        document.body.classList.remove("theme-warm", "theme-rain");
+        document.body.classList.add("theme-joy");
+        document.querySelector('meta[name="theme-color"]').content = "#FBE0C8";
+        setAmbientMode("joy");
+        positiveMessage.textContent = withName(optionObj.reply);
+        screenPositive.classList.remove("hidden");
+        // petite pluie de cœurs de célébration
+        ["💖", "✨", "🥂", "💫"].forEach((em, i) => setTimeout(() => triggerEmojiBurst(null, em, 5), 250 + i * 350));
+      }
+    }
+
+    $("btn-copy-insta").addEventListener("click", async (e) => {
+      triggerEmojiBurst(e, "📋");
+      const label = $("copy-label");
+      const handle = "j.w.v1";
+      let ok = false;
+      try { await navigator.clipboard.writeText(handle); ok = true; }
+      catch (err) {
+        const ta = document.createElement("textarea");
+        ta.value = handle; document.body.appendChild(ta); ta.select();
+        try { ok = document.execCommand("copy"); } catch (e2) {}
+        document.body.removeChild(ta);
+      }
+      label.textContent = ok ? "Pseudo copié (j.w.v1) ✓" : "@j.w.v1";
+      setTimeout(() => { label.textContent = "Copier le pseudo"; }, 2800);
+    });
+
+    function resetGame() {
+      clearTimeout(bufferTimeout);
+      clearInterval(typeTimer);
+      $("floating-bubbles-layer").innerHTML = "";
+      screenPositive.classList.add("hidden");
+      screenNegative.classList.add("hidden");
+      screenQuiz.classList.add("hidden");
+      screenIntro.classList.remove("hidden");
+      reactionDock.classList.remove("hidden");
+      document.body.classList.remove("theme-joy", "theme-rain");
+      document.body.classList.add("theme-warm");
+      document.querySelector('meta[name="theme-color"]').content = "#FAF3EB";
+      setAmbientMode("warm");
+      currentQuestionIndex = 0;
+      sessionRecord = newSession();
+      $("visitor-name-input").value = "";
+      setTimeout(spawnUniqueDriftingBubble, 900);
+    }
+
+    /* ====================== ESPACE CRÉATEUR ====================== */
+    const creatorModal = $("creator-modal"), creatorLockView = $("creator-lock-view"), creatorDashboardView = $("creator-dashboard-view");
+    const creatorPinInput = $("creator-pin-input"), creatorPinError = $("creator-pin-error");
+    const CREATOR_PIN = "2026"; // ⚠️ PIN côté client : simple barrière de confort, pas de la vraie sécurité
+    let isCreatorUnlocked = false, subscribed = false, lastRendered = [];
+
+    function openCreator() {
+      creatorModal.classList.remove("hidden");
+      if (!isCreatorUnlocked) {
+        creatorPinInput.value = "";
+        creatorPinError.classList.add("hidden");
+        creatorLockView.classList.remove("hidden");
+        creatorDashboardView.classList.add("hidden");
+        setTimeout(() => creatorPinInput.focus(), 100);
+      }
+    }
+    function closeCreator() { creatorModal.classList.add("hidden"); }
+    $("btn-open-creator").addEventListener("click", openCreator);
+    $("btn-close-creator").addEventListener("click", closeCreator);
+    creatorModal.addEventListener("click", (e) => { if (e.target === creatorModal) closeCreator(); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeCreator(); });
+
+    function unlockCreatorDashboard() {
+      if (creatorPinInput.value.trim() !== CREATOR_PIN) { creatorPinError.classList.remove("hidden"); return; }
+      isCreatorUnlocked = true;
+      creatorLockView.classList.add("hidden");
+      creatorDashboardView.classList.remove("hidden");
+      renderCreatorSessions([]); // affichage immédiat (local) puis cloud
+      if (!subscribed && typeof window.subscribeToResponses === "function") {
+        subscribed = true;
+        window.subscribeToResponses(renderCreatorSessions);
+      }
+    }
+    $("btn-unlock-creator").addEventListener("click", unlockCreatorDashboard);
+    creatorPinInput.addEventListener("keydown", (e) => { if (e.key === "Enter") unlockCreatorDashboard(); });
+
+    function renderCreatorSessions(cloudSessions) {
+      const badge = $("sessions-count-badge"), list = $("sessions-list");
+      $("sync-mode").textContent = window.__cloudReady ? "En direct" : "Local";
+
+      // fusion cloud + local (le cloud prime si même identifiant)
+      const map = new Map();
+      loadLocal().forEach((s) => map.set(s.sessionId || s.id, s));
+      cloudSessions.forEach((s) => map.set(s.sessionId || s.id, s));
+      const displayList = [...map.values()]
+        .filter((s) => Object.keys(s.answers || {}).length > 0 || (s.visitorName && s.visitorName !== "My Lady"))
+        .sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+      lastRendered = displayList;
+
+      badge.textContent = `${displayList.length} participation${displayList.length > 1 ? "s" : ""}`;
+      list.innerHTML = "";
+
+      if (displayList.length === 0) {
+        list.innerHTML = `
+          <div class="rounded-2xl p-8 text-center bg-[#FAF3EB]/70 border border-[#D49A6A]/30">
+            <p class="text-sm text-[#5C3D35]">Aucune réponse enregistrée pour le moment.</p>
+            <p class="text-xs text-[#8C685D] mt-1">Dès qu'elle répondra aux questions ou t'écrira un mot, tout apparaîtra ici en direct !</p>
+          </div>`;
+        return;
+      }
+
+      displayList.forEach((sess) => {
+        const card = document.createElement("div");
+        card.className = "rounded-2xl p-5 bg-white border border-[#D49A6A]/40 shadow-xs space-y-3";
+        const v = sess.verdict || "";
+        const badgeClass = v.includes("Pas intéressée") ? "bg-slate-200 text-slate-700 border-slate-300"
+          : v.includes("Intéressée") ? "bg-emerald-100 text-emerald-800 border-emerald-200"
+          : "bg-amber-100 text-amber-800 border-amber-200";
+
+        const keys = Object.keys(sess.answers || {}).sort((a, b) => Number(a) - Number(b));
+        const answersHtml = keys.length === 0
+          ? `<p class="text-xs italic text-[#8C685D]">A ouvert l'expérience, pas encore de réponse validée.</p>`
+          : keys.map((k) => {
+              const it = sess.answers[k];
+              return `
+                <div class="rounded-xl p-3 bg-[#FAF3EB]/65 border border-[#D49A6A]/25 text-left">
+                  <p class="text-[11px] font-semibold text-[#8C685D] mb-1">Q${Number(k) + 1} • ${escapeHtml(it.question)}</p>
+                  <p class="text-xs sm:text-sm font-medium text-[#2C1A16]">Choix : ${escapeHtml(it.choice)}</p>
+                  ${it.customText ? `<p class="mt-1.5 text-xs sm:text-sm font-semibold text-[#C86D51] bg-white/90 px-3 py-1.5 rounded-lg border border-[#C86D51]/25">💬 Son message : « ${escapeHtml(it.customText)} »</p>` : ""}
+                </div>`;
+            }).join("");
+
+        const emojis = (sess.emojis || []).length ? `<div class="text-xs text-[#7A564B]">Réactions : <span class="text-base">${escapeHtml(sess.emojis.join(" "))}</span></div>` : "";
+
+        card.innerHTML = `
+          <div class="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-[#D49A6A]/20">
+            <div>
+              <span class="font-serif-editorial text-lg font-semibold text-[#2C1A16]">${escapeHtml(sess.visitorName || "My Lady")}</span>
+              <span class="text-[11px] text-[#8C685D] ml-2">${escapeHtml(sess.startedAt || "")}</span>
+            </div>
+            <span class="text-xs font-semibold px-3 py-1 rounded-full border ${badgeClass}">${escapeHtml(v || "En cours")}</span>
+          </div>
+          ${emojis}
+          <div class="space-y-2">${answersHtml}</div>`;
+        list.appendChild(card);
+      });
+    }
+
+    $("btn-copy-all").addEventListener("click", async () => {
+      const txt = lastRendered.map((s) => {
+        const lines = Object.keys(s.answers || {}).sort((a, b) => a - b).map((k) => {
+          const a = s.answers[k];
+          return `Q${+k + 1}: ${a.choice}${a.customText ? "  💬 " + a.customText : ""}`;
+        });
+        return `— ${s.visitorName} (${s.startedAt}) · ${s.verdict}\n${lines.join("\n")}`;
+      }).join("\n\n");
+      const btn = $("btn-copy-all");
+      try { await navigator.clipboard.writeText(txt || "Aucune réponse"); btn.textContent = "✓ Copié"; }
+      catch (e) { btn.textContent = "Copie impossible"; }
+      setTimeout(() => { btn.textContent = "📋 Copier tout"; }, 2000);
+    });
+
+    /* ====================== AMBIANCE CANVAS ====================== */
+    const canvas = $("ambient-canvas"), ctx = canvas.getContext("2d");
+    let ambientMode = "warm", particles = [];
+
+    function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    function setAmbientMode(mode) { ambientMode = mode; initParticles(); }
+
+    function initParticles() {
+      particles = [];
+      const isMobile = window.innerWidth < 640;
+      if (ambientMode === "warm") {
+        for (let i = 0; i < (isMobile ? 26 : 45); i++) particles.push({
+          x: Math.random() * canvas.width, y: Math.random() * canvas.height, size: Math.random() * 4 + 2,
+          speedY: -(Math.random() * 0.45 + 0.15), speedX: (Math.random() - 0.5) * 0.4,
+          alpha: Math.random() * 0.55 + 0.2, pulse: Math.random() * Math.PI * 2,
+          type: Math.random() > 0.35 ? "sparkle" : "petal"
+        });
+      } else if (ambientMode === "joy") {
+        for (let i = 0; i < (isMobile ? 32 : 55); i++) particles.push({
+          x: Math.random() * canvas.width, y: canvas.height + Math.random() * 200, size: Math.random() * 8 + 6,
+          speedY: -(Math.random() * 1.4 + 0.7), speedX: (Math.random() - 0.5) * 0.8,
+          alpha: Math.random() * 0.65 + 0.25, wobble: Math.random() * Math.PI * 2, isHeart: Math.random() > 0.35
+        });
+      } else if (ambientMode === "rain") {
+        for (let i = 0; i < (isMobile ? 75 : 130); i++) particles.push({
+          x: Math.random() * canvas.width, y: Math.random() * canvas.height,
+          length: Math.random() * 16 + 10, speedY: Math.random() * 5 + 4.5, speedX: -0.8, alpha: Math.random() * 0.32 + 0.12
+        });
+      }
+    }
+
+    function drawHeart(x, y, size, alpha) {
+      ctx.save(); ctx.translate(x, y); ctx.beginPath();
+      const t = size * 0.3;
+      ctx.moveTo(0, t);
+      ctx.bezierCurveTo(0, 0, -size / 2, 0, -size / 2, t);
+      ctx.bezierCurveTo(-size / 2, (size + t) / 2, 0, (size + t) / 1.3, 0, size);
+      ctx.bezierCurveTo(0, (size + t) / 1.3, size / 2, (size + t) / 2, size / 2, t);
+      ctx.bezierCurveTo(size / 2, 0, 0, 0, 0, t);
+      ctx.closePath(); ctx.fillStyle = `rgba(200,109,81,${alpha})`; ctx.fill(); ctx.restore();
+    }
+
+    function animateAmbient() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (document.hidden) { requestAnimationFrame(animateAmbient); return; }
+      if (ambientMode === "warm") {
+        particles.forEach((p) => {
+          p.y += p.speedY; p.x += p.speedX + Math.sin(p.pulse) * 0.2; p.pulse += 0.025;
+          if (p.y < -20) { p.y = canvas.height + 20; p.x = Math.random() * canvas.width; }
+          const a = p.alpha * (0.7 + 0.3 * Math.sin(p.pulse));
+          if (p.type === "sparkle") {
+            ctx.beginPath(); ctx.arc(p.x, p.y, p.size * 0.65, 0, Math.PI * 2); ctx.fillStyle = `rgba(212,154,106,${a})`; ctx.fill();
+          } else {
+            ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.pulse * 0.5); ctx.beginPath();
+            ctx.ellipse(0, 0, p.size, p.size * 0.5, 0, 0, Math.PI * 2); ctx.fillStyle = `rgba(183,110,121,${a * 0.7})`; ctx.fill(); ctx.restore();
+          }
+        });
+      } else if (ambientMode === "joy") {
+        particles.forEach((p) => {
+          p.y += p.speedY; p.wobble += 0.03; p.x += p.speedX + Math.sin(p.wobble) * 0.5;
+          if (p.y < -30) { p.y = canvas.height + 30; p.x = Math.random() * canvas.width; }
+          if (p.isHeart) drawHeart(p.x, p.y, p.size, p.alpha);
+          else { ctx.beginPath(); ctx.arc(p.x, p.y, p.size * 0.35, 0, Math.PI * 2); ctx.fillStyle = `rgba(212,154,106,${p.alpha})`; ctx.fill(); }
+        });
+      } else if (ambientMode === "rain") {
+        ctx.lineWidth = 1.2; ctx.lineCap = "round";
+        particles.forEach((p) => {
+          p.y += p.speedY; p.x += p.speedX;
+          if (p.y > canvas.height) { p.y = -20; p.x = Math.random() * (canvas.width + 40); }
+          ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x + p.speedX * 1.5, p.y + p.length);
+          ctx.strokeStyle = `rgba(148,163,184,${p.alpha})`; ctx.stroke();
+        });
+      }
+      requestAnimationFrame(animateAmbient);
+    }
+
+    window.addEventListener("pagehide", saveLocal);
+    window.onload = function () {
+      initParticles();
+      if (!reducedMotion) animateAmbient();
+      setTimeout(spawnUniqueDriftingBubble, 1200);
+      startFloatingBubblesLoop();
+    };
+  </script>
+</body>
+</html>
