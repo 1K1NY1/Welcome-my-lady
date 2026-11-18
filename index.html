@@ -179,7 +179,7 @@
         Un petit jeu interactif en 7 étapes pour découvrir ton univers…
       </p>
       <p class="animate-fade-up-delay-1 italic font-serif-editorial text-lg sm:text-xl text-[#9E523B] max-w-md mx-auto mb-3">Choisis une option ou écris-moi directement ta propre réponse.</p>
-      <p class="animate-fade-up-delay-1 text-xs text-[#8C685D] mb-6">⏱ Environ 2 minutes · tes réponses me sont envoyées</p>
+      <p class="animate-fade-up-delay-1 text-xs text-[#8C685D] mb-6">⏱ Environ 2 minutes · tes réponses me sont envoyées à la fin</p>
 
       <div class="animate-fade-up-delay-1 max-w-xs mx-auto mb-6">
         <label for="visitor-name-input" class="sr-only">Ton prénom ou surnom</label>
@@ -535,7 +535,7 @@
       { platform: "google", appName: "Avis Google • 5.0 ⭐⭐⭐⭐⭐", text: "Si tu peux laisse un avis Google (emojis please 😂)" },
       { platform: "tiktok", appName: "TikTok • Pour Toi", text: "POV : Tu viens de tomber sur le profil le plus créatif de ton FYP 🔥🎶" },
       { platform: "instagram", appName: "Instagram • Note", text: "La NASA n'a rien à envier à ce niveau de charme et d'ingénierie 🚀😏" },
-      { platform: "whatsapp", appName: "WhatsApp • En ligne", text: "Fun fact : chaque réponse que tu écris arrive directement chez moi 📬✨" }
+      { platform: "whatsapp", appName: "WhatsApp • En ligne", text: "Fun fact : ton petit récap m'arrive directement par mail à la fin 📬✨" }
     ];
 
     /* ====================== ÉTAT ====================== */
@@ -576,6 +576,47 @@
     function syncCurrentSession() {
       saveLocal();
       if (typeof window.saveSessionToCloud === "function") window.saveSessionToCloud(sessionRecord);
+    }
+
+    /* ====================== ENVOI PAR E-MAIL (UN SEUL RÉCAP GROUPÉ) ====================== */
+    // 1) Crée une clé gratuite sur https://web3forms.com (tu y saisis ton e-mail)
+    // 2) Colle-la ci-dessous à la place de TA_CLE_ICI
+    const WEB3FORMS_KEY = "TA_CLE_ICI";
+    const sentFlags = {};
+
+    function buildRecap(reason) {
+      const s = sessionRecord;
+      const keys = Object.keys(s.answers).sort((a, b) => a - b);
+      const blocks = keys.map((k) => {
+        const a = s.answers[k];
+        return `Q${+k + 1} — ${a.question}\n   → Choix : ${a.choice}` + (a.customText ? `\n   💬 Son message : « ${a.customText} »` : "");
+      });
+      const head = [
+        `Prénom / surnom : ${hasName() ? s.visitorName : "(non renseigné)"}`,
+        `Début : ${s.startedAt}`,
+        `Verdict : ${reason === "abandon" ? "⚠️ Est partie avant la fin" : s.verdict}`
+      ];
+      if (s.emojis.length) head.push(`Réactions : ${s.emojis.join(" ")}`);
+      return head.join("\n") + "\n\n─── SES RÉPONSES ───\n" + blocks.join("\n\n");
+    }
+
+    function sendPackage(reason) {
+      if (WEB3FORMS_KEY === "TA_CLE_ICI" || !Object.keys(sessionRecord.answers).length) return;
+      const id = sessionRecord.sessionId;
+      if (sentFlags[id]) return; // un seul e-mail par participation
+      sentFlags[id] = true;
+      const tag = reason === "abandon" ? "⚠️ partie en cours de route" : sessionRecord.verdict;
+      fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        keepalive: true,
+        body: JSON.stringify({
+          access_key: WEB3FORMS_KEY,
+          subject: `💌 Welcome My Lady — ${hasName() ? sessionRecord.visitorName : "Nouvelle participante"} · ${tag}`,
+          from_name: "Welcome My Lady",
+          message: buildRecap(reason)
+        })
+      }).catch(() => { sentFlags[id] = false; });
     }
 
     /* ====================== BULLES FLOTTANTES ====================== */
@@ -747,6 +788,7 @@
       if (questionObj.isFinal) {
         sessionRecord.verdict = optionObj.outcome === "negative" ? "Pas intéressée 🌧️" : "Intéressée ✨ (" + optionObj.label + ")";
         syncCurrentSession();
+        sendPackage("final");
         setTimeout(() => triggerEnding(optionObj), 550);
         return;
       }
@@ -1072,7 +1114,7 @@
       requestAnimationFrame(animateAmbient);
     }
 
-    window.addEventListener("pagehide", saveLocal);
+    window.addEventListener("pagehide", () => { saveLocal(); sendPackage("abandon"); });
     window.onload = function () {
       initParticles();
       if (!reducedMotion) animateAmbient();
